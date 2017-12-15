@@ -1,5 +1,12 @@
-import csv
-import datetime
+#!/usr/bin/env python
+
+import csv  # gehört zur standard-bibliothek, muss nicht über pip installiert werden
+import datetime  # gehört zur standard-bibliothek, muss nicht über pip installiert werden
+import os
+import sys
+import matplotlib
+matplotlib.use('TkAgg')  # mac specific backend problem
+import matplotlib.pyplot as plt
 
 
 def read_csv_file(filepath):
@@ -45,3 +52,44 @@ def read_csv_file(filepath):
                 continue
 
     return time, measurement_values
+
+# 1. Ansatz (verworfen)
+#
+# listet die Files die in dem Ordner liegen in der Reihenfolge wie sie in dem Ordner erscheinen
+# a = "./results"
+# resultfiles = sorted(os.listdir(a))
+#
+# for measurement_variable in resultfiles:
+#     if measurement_variable == '.DS_Store': # Speicherdatei, die der Mac automatisch anlegt
+#         continue
+#     filepath = './results/' + measurement_variable
+
+# PROBLEM DABEI: es werden auch alle unsichtbaren Dateien, z.B. Systemdateien gelistet
+# (wie die .DS_Store Datei). Diese kann man zwar jedesmal versuchen abzufangen,
+# so wie ich hier mit der .DS_Store Datei, das ist aber ein große potentielle Fehlerquelle.
+# Deshalb ist eine alternative Möglichkeit: Die Dateinamen als Argumente über
+# die Shell/das Terminal zu übergeben, als sogenannte Kommandozeilenparameter.
+# Diese werden als Liste an die Variable 'argv' im Modul 'sys' übergeben,
+# wobei an erster Stelle (sys.argv[0]) der Name des Skriptes (Dateiname) steht.
+# Die Argumente stehen ab der zweiten Stelle bis zum Ende der Liste (sys.argv[1:]):
+filepaths = sys.argv[1:]
+for filepath in filepaths:
+
+    # import csv files with the read_csv_file function
+    time, measurement_values = read_csv_file(filepath)
+
+    # extract filename to save png's
+    filename = os.path.basename(filepath)
+
+    # loop through possible columns
+    for x in range(0, len(measurement_values)):
+        plt.plot(time, measurement_values[x])
+
+    plt.xlabel('Time')
+    plt.ylabel('Potential Evaporation [mm/d]')
+    plt.grid(linestyle='-.')
+
+    # plt.show()
+    plt.savefig('./result_plots/'+ filename + '.png', format='png')
+    # delete the last plot after saving, otherwise all graphs would be plottet in one figure
+    plt.clf()
