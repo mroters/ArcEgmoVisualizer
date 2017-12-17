@@ -1,10 +1,12 @@
 #!/usr/bin/env python
+# visualize results from ArcEgmo exercise 1 from http://www.uebungen.arcegmo.de/html/_index.html
 
 import csv  # gehört zur standard-bibliothek, muss nicht über pip installiert werden
 import datetime  # gehört zur standard-bibliothek, muss nicht über pip installiert werden
 import os
 import sys
 import matplotlib
+
 matplotlib.use('TkAgg')  # mac specific backend problem
 import matplotlib.pyplot as plt
 
@@ -53,6 +55,26 @@ def read_csv_file(filepath):
 
     return time, measurement_values
 
+
+def get_readable_name(filename):
+    # return ArcEgmo file names in readable measurement variable names
+    switcher = {
+        'fgw_mit.qc': 'Total Runoff [mm/d]',
+        'geb_mit.drain': 'Drainage Runoff [mm/d]',
+        'geb_mit.ep': 'Potential Evaporation [mm/d]',
+        'geb_mit.er': 'Actual Evaporation [mm/d]',
+        'geb_mit.glo': 'Global Radiation',
+        'geb_mit.gwn': 'Groundwater Recharge [mm/d]',
+        'geb_mit.inter': 'Hypodermic Outflow [mm/d]',
+        'geb_mit.mkr': 'Combined Sewer Outflow ',
+        'geb_mit.pi': 'Precipitation [mm/d]',
+        'geb_mit.ro': 'Surface Runoff [mm/d]',
+        'geb_mit.tkr': 'Separation Sewer Outflow [mm/d]',
+    }
+
+    return switcher.get(filename, "not defined")
+
+
 # 1. Ansatz (verworfen)
 #
 # listet die Files die in dem Ordner liegen in der Reihenfolge wie sie in dem Ordner erscheinen
@@ -86,10 +108,11 @@ for filepath in filepaths:
         plt.plot(time, measurement_values[x])
 
     plt.xlabel('Time')
-    plt.ylabel('Potential Evaporation [mm/d]')
+    ylabel = get_readable_name(filename)
+    plt.ylabel(ylabel)
     plt.grid(linestyle='-.')
 
     # plt.show()
-    plt.savefig('./result_plots/'+ filename + '.png', format='png')
+    plt.savefig('./result_plots/' + filename + '.png', format='png')
     # delete the last plot after saving, otherwise all graphs would be plottet in one figure
     plt.clf()

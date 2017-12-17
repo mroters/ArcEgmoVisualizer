@@ -1,6 +1,6 @@
 import unittest
 import datetime
-from visualize_results import read_csv_file
+from visualize_results import read_csv_file, get_readable_name
 
 
 class ReadCsvTestCase(unittest.TestCase):
@@ -74,6 +74,13 @@ class ReadCsvTestCase(unittest.TestCase):
         self.assertTrue(type(measurement_values[0][0]) is float)
         self.assertTrue(type(measurement_values[1][0]) is float)
         self.assertTrue(type(measurement_values[2][0]) is float)
+
+    def testLabelName(self):
+        # check for readable variable names
+        self.assertEqual(get_readable_name('geb_mit.ep'), 'Potential Evaporation [mm/d]')
+        self.assertEqual(get_readable_name('not_defined_file'), 'not defined')
+        self.assertEqual(get_readable_name(1), 'not defined')
+
 
 
 # the test is only conducted if the file is not imported within an other modul, but executed directly in the shell
